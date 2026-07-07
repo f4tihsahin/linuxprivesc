@@ -174,3 +174,110 @@ python3 beroot.py > beroot.txt && \
 ./LinEnum.sh > linenum.txt && \
 echo "✅ Tüm taramalar tamamlandı!" && \
 ls -la *.txt
+
+
+🚀 Arka Planda Çalıştırma Komutları
+1. Tek Bir Aracı Arka Planda Çalıştırma
+bash
+# LES - arka planda
+nohup ./les.sh > les_output.txt 2>&1 &
+
+# LinPEAS - arka planda
+nohup ./linpeas.sh > linpeas_output.txt 2>&1 &
+
+# LSE - arka planda
+nohup ./lse.sh -i > lse_output.txt 2>&1 &
+
+# Unix Privesc Check - arka planda
+nohup ./unix-privesc-check standard > unix_privesc_output.txt 2>&1 &
+
+# BeRoot - arka planda
+nohup python3 beroot.py > beroot_output.txt 2>&1 &
+
+# LinEnum - arka planda
+nohup ./LinEnum.sh > linenum_output.txt 2>&1 &
+2. Tüm Araçları Tek Komutla Arka Planda Çalıştırma
+bash
+# Tüm araçları arka planda çalıştır
+nohup ./les.sh > les_output.txt 2>&1 &
+nohup ./linpeas.sh > linpeas_output.txt 2>&1 &
+nohup ./lse.sh -i > lse_output.txt 2>&1 &
+nohup ./unix-privesc-check standard > unix_privesc_output.txt 2>&1 &
+nohup python3 beroot.py > beroot_output.txt 2>&1 &
+nohup ./LinEnum.sh > linenum_output.txt 2>&1 &
+
+echo "✅ Tüm araçlar arka planda çalışıyor!"
+jobs
+3. Arka Planda Çalışan İşlemleri Görüntüleme
+bash
+# Çalışan arka plan işlemlerini listele
+jobs
+
+# PID'leri ile birlikte göster
+ps aux | grep -E "les.sh|linpeas.sh|lse.sh|unix-privesc-check|beroot.py|LinEnum.sh" | grep -v grep
+
+# Sadece nohup ile başlatılanları göster
+ps aux | grep nohup
+4. Arka Planda Çalışan İşlemleri Durdurma
+bash
+# Belirli bir işlemi durdur (PID ile)
+kill [PID]
+
+# Örneğin:
+kill 12345
+
+# Tüm privesc araçlarını durdur
+pkill -f "les.sh|linpeas.sh|lse.sh|unix-privesc-check|beroot.py|LinEnum.sh"
+5. Arka Planda Çalışan İşlemleri Öne Alma
+bash
+# Arka plandaki işlemi öne al
+fg %1  # 1 numaralı işlemi öne al
+fg %2  # 2 numaralı işlemi öne al
+📦 Hepsi Tek Komutta (Arka Planda)
+bash
+# Tüm araçları indir, arka planda çalıştır ve çıktıları kaydet
+cd /tmp && \
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/les.sh -O les.sh && \
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/linpeas.sh -O linpeas.sh && \
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/lse.sh -O lse.sh && \
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/unix-privesc-check -O unix-privesc-check && \
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/beroot.py -O beroot.py && \
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/LinEnum.sh -O LinEnum.sh && \
+chmod +x *.sh *.py && \
+echo "✅ Tüm araçlar indirildi, şimdi arka planda çalıştırılıyor..." && \
+nohup ./les.sh > les.txt 2>&1 & \
+nohup ./linpeas.sh > linpeas.txt 2>&1 & \
+nohup ./lse.sh -i > lse.txt 2>&1 & \
+nohup ./unix-privesc-check standard > unix_privesc.txt 2>&1 & \
+nohup python3 beroot.py > beroot.txt 2>&1 & \
+nohup ./LinEnum.sh > linenum.txt 2>&1 & \
+echo "✅ Tüm araçlar arka planda çalışıyor!" && \
+echo "Çıktıları kontrol etmek için: tail -f *.txt" && \
+jobs
+📊 Çıktıları Canlı İzleme
+bash
+# Tüm çıktıları canlı izle
+tail -f les.txt linpeas.txt lse.txt unix_privesc.txt beroot.txt linenum.txt
+
+# Sadece belirli bir dosyayı izle
+tail -f linpeas.txt
+⏱️ Zamanlanmış Çalıştırma (cron ile)
+bash
+# Belirli bir saatte çalıştırmak için (örnek: her gün 02:00'de)
+(crontab -l 2>/dev/null; echo "0 2 * * * cd /tmp && ./linpeas.sh > /tmp/linpeas_daily_\$(date +\%Y\%m\%d).txt") | crontab -
+🎯 En Pratik Kullanım
+bash
+# 1. Araçları indir
+cd /tmp
+wget -q https://raw.githubusercontent.com/f4tihsahin/linuxprivesc/main/linpeas.sh -O linpeas.sh && chmod +x linpeas.sh
+
+# 2. Arka planda çalıştır ve çıktıyı kaydet
+nohup ./linpeas.sh > linpeas_$(date +%Y%m%d_%H%M%S).txt 2>&1 &
+
+# 3. Çalıştığını kontrol et
+ps aux | grep linpeas
+
+# 4. Çıktıyı izle
+tail -f linpeas_*.txt
+
+
